@@ -1,0 +1,3 @@
+[submodule "drone_firmware/components/websocket"]
+	path = drone_firmware/components/websocket
+	url = https://github.com/Molorius/esp32-websocket.git

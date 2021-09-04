@@ -7,6 +7,7 @@
   "idf.flashType": "UART",
   "idf.portWin": "COM3",
   "files.associations": {
+    "*.js": "javascript",
     "string": "cpp",
     "*.inc": "cpp",
     "array": "cpp",
@@ -68,6 +69,7 @@
     "stdexcept": "cpp",
     "streambuf": "cpp",
     "thread": "cpp",
-    "typeinfo": "cpp"
+    "typeinfo": "cpp",
+    "*.ipp": "cpp"
   }
 }

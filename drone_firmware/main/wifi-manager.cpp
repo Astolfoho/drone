@@ -17,7 +17,7 @@
 #define WIFI_FAIL_BIT BIT1
 
 
-#define TAG "WIFI_MANAGER"
+const char* TAG = "WIFI_MANAGER";
 
 static EventGroupHandle_t s_wifi_event_group;
 
