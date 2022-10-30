@@ -1,7 +1,11 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+
+import './models/drone-feedback.dart';
 
 void main() {
   runApp(MyApp());
@@ -49,24 +53,33 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  DroneFeedback? feedback;
+  double speed = 0;
+
   var channel = WebSocketChannel.connect(
     //Uri.parse('wss://echo.websocket.org'),
-    Uri.parse('ws://192.168.15.123:9998'),
+    Uri.parse('ws://192.168.15.101/ws'),
   );
 
   @override
   void initState() {
     this.channel.stream.listen((data) {
-      log(data);
+      //log(data);
+      var parsed = jsonDecode(data);
+      //log("parse ok");
+      var fb = DroneFeedback.fromJSON(parsed);
+      this.setState(() {
+        this.feedback = fb;
+      });
     }, onDone: () {
       this.channel = WebSocketChannel.connect(
         //Uri.parse('wss://echo.websocket.org'),
-        Uri.parse('ws://192.168.15.123/ws'),
+        Uri.parse('ws://192.168.15.101/ws'),
       );
     }, onError: (obj) {
       this.channel = WebSocketChannel.connect(
         //Uri.parse('wss://echo.websocket.org'),
-        Uri.parse('ws://192.168.15.123/ws'),
+        Uri.parse('ws://192.168.15.101/ws'),
       );
     });
   }
@@ -85,44 +98,68 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // StreamBuilder(
-            //   stream: channel.stream,
-            //   builder: (context, snapshot) {
-            //     return Text(snapshot.hasData ? '${snapshot.data}' : '');
-            //   },
-            // )
-          ],
-        ),
+      body: Column(
+        children: [
+          Text(speed.round().toString()),
+          Slider(
+            value: speed,
+            max: 2500,
+            min: 0,
+            label: speed.round().toString(),
+            onChanged: (double value) {
+              setState(() {
+                speed = value;
+              });
+            },
+          ),
+          ElevatedButton(
+            child: Text("Atualizar Velocidade"),
+            onPressed: () {
+              channel.sink.add('{ "type": 2, "speed": ${speed.round()}}');
+            },
+          ),
+          ...renderFeedBack()
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _sendMessage,
-        tooltip: 'Send message',
+        tooltip: 'Send message',  
         child: Icon(Icons.send),
       ),
     );
   }
 
   void _sendMessage() {
-    channel.sink.add('Hello');
+    channel.sink.add('{ "type": 1, "message": "teste bem sucedido"}');
+  }
+
+  List<Widget> renderFeedBack() {
+    if (this.feedback == null) {
+      return [Text("Waiting for data")];
+    }
+
+    return [
+      renderFeedBackItem("quaternion x: ", this.feedback?.quaternionX?.toStringAsFixed(4) ?? "0"),
+      renderFeedBackItem("quaternion y: ", this.feedback?.quaternionX?.toStringAsFixed(4) ?? "0"),
+      renderFeedBackItem("quaternion z: ", this.feedback?.quaternionX?.toStringAsFixed(4) ?? "0"),
+      renderFeedBackItem("quaternion w: ", this.feedback?.quaternionX?.toStringAsFixed(4) ?? "0"),
+      SizedBox(height: 20),
+      renderFeedBackItem("euler x: ", this.feedback?.eulerX?.toStringAsFixed(4) ?? "0"),
+      renderFeedBackItem("euler y: ", this.feedback?.eulerY?.toStringAsFixed(4) ?? "0"),
+      renderFeedBackItem("euler z: ", this.feedback?.eulerZ?.toStringAsFixed(4) ?? "0"),
+      SizedBox(height: 20),
+      renderFeedBackItem("rool: ", this.feedback?.roll?.toStringAsFixed(4) ?? "0"),
+      renderFeedBackItem("pitch: ", this.feedback?.pitch?.toStringAsFixed(4) ?? "0"),
+      renderFeedBackItem("yaw: ", this.feedback?.yaw?.toStringAsFixed(4) ?? "0"),
+    ];
+  }
+
+  renderFeedBackItem(String text, String value) {
+    return Row(
+      children: [
+        Text(text),
+        Text(value),
+      ],
+    );
   }
 }

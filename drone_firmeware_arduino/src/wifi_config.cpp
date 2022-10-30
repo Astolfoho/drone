@@ -23,4 +23,9 @@ void init_wifi()
     Serial.println("WiFi conectada.");
     Serial.println("Endereço de IP: ");
     Serial.println(WiFi.localIP());
+
+
+    
+
+
 }
