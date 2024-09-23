@@ -11,5 +11,6 @@
         "type_traits": "cpp",
         "utility": "cpp",
         "system_error": "cpp"
-    }
+    },
+    "idf.portWin": "COM4"
 }

@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   var channel = WebSocketChannel.connect(
     //Uri.parse('wss://echo.websocket.org'),
-    Uri.parse('ws://192.168.15.101/ws'),
+    Uri.parse('ws://192.168.3.67/ws'),
   );
 
   @override
@@ -74,12 +74,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }, onDone: () {
       this.channel = WebSocketChannel.connect(
         //Uri.parse('wss://echo.websocket.org'),
-        Uri.parse('ws://192.168.15.101/ws'),
+        Uri.parse('ws://192.168.3.67/ws'),
       );
     }, onError: (obj) {
       this.channel = WebSocketChannel.connect(
         //Uri.parse('wss://echo.websocket.org'),
-        Uri.parse('ws://192.168.15.101/ws'),
+        Uri.parse('ws://192.168.3.67/ws'),
       );
     });
   }

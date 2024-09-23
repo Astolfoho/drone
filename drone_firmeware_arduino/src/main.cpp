@@ -67,7 +67,7 @@ void process_command(char *command)
     speed = doc["speed"];
   }
 
-  ws.textAll("Comando Recebido");
+  ws.textAll("{ \"text\": \"Comando Recebido\" }");
 }
 
 void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len)
@@ -76,7 +76,7 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
   {
     //client connected
     logd("ws[%s][%u] connect\n", server->url(), client->id());
-    client->printf("Hello Client %u :)", client->id());
+    client->printf("{ }", client->id());
     client->ping();
   }
   else if (type == WS_EVT_DISCONNECT)
@@ -117,9 +117,9 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
         logd("\n");
       }
       if (info->opcode == WS_TEXT)
-        client->text("I got your text message");
+        client->text("{}");
       else
-        client->binary("I got your binary message");
+        client->binary("{}");
     }
     // else
     // {
@@ -208,18 +208,18 @@ void setup()
   init_wifi();
   logd("awsome!!!");
 
-  bool mpuOk = false;
-  while (!mpuOk)
-  {
-    mpuOk = mpu.setup(0x68);
+  // bool mpuOk = false;
+  // while (!mpuOk)
+  // {
+  //   mpuOk = mpu.setup(0x68);
 
-    if (!mpuOk)
-      Serial.println("MPU connection failed. Please check your connection with `connection_check` example.");
-    else
-      break;
+  //   if (!mpuOk)
+  //     Serial.println("MPU connection failed. Please check your connection with `connection_check` example.");
+  //   else
+  //     break;
 
-    delay(2000);
-  }
+  //   delay(2000);
+  // }
 
   mpu.setMagneticDeclination(-21.34);
   mpu.setFilterIterations(10);
@@ -249,19 +249,19 @@ void setup()
   server.addHandler(&ws);
   server.begin();
 
-  Serial.println("Accel Gyro calibration will start in 5sec.");
-  Serial.println("Please leave the device still on the flat plane.");
-  mpu.verbose(true);
+  // Serial.println("Accel Gyro calibration will start in 5sec.");
+  // Serial.println("Please leave the device still on the flat plane.");
+  // mpu.verbose(true);
   //delay(2000);
   //mpu.calibrateAccelGyro();
 
-  Serial.println("Mag calibration will start in 5sec.");
-  Serial.println("Please Wave device in a figure eight until done.");
+  // Serial.println("Mag calibration will start in 5sec.");
+  // Serial.println("Please Wave device in a figure eight until done.");
   //delay(2000);
   //mpu.calibrateMag();
 
-  print_calibration();
-  mpu.verbose(false);
+  // print_calibration();
+  // mpu.verbose(false);
 
   ESP32PWM::allocateTimer(0);
   ESP32PWM::allocateTimer(1);
@@ -292,10 +292,10 @@ void setup()
   servo3.attach(servo3Pin, 0, maxUs);
   servo4.attach(servo4Pin, 0, maxUs);
 
-  servo1.writeMicroseconds(maxUs);
-  servo2.writeMicroseconds(maxUs);
-  servo3.writeMicroseconds(maxUs);
-  servo4.writeMicroseconds(maxUs);
+  servo1.writeMicroseconds(1000);
+  servo2.writeMicroseconds(1000);
+  servo3.writeMicroseconds(1000);
+  servo4.writeMicroseconds(1000);
 
   delay(3000);
 
